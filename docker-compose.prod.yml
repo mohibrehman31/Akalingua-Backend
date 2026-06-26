@@ -10,6 +10,22 @@ services:
       postgres:
         condition: service_healthy
 
+  # On-demand only — NOT part of `docker compose up` (profile-gated).
+  # Run once after migrate:  docker compose -f docker-compose.prod.yml run --rm seed
+  # ponytail: destructive (truncates + reseeds dev data). Never wire into app startup or it wipes the DB on every restart.
+  seed:
+    build:
+      context: .
+      target: build
+    env_file: .env
+    command: npm run seed
+    profiles: ["tools"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
   app:
     build: .                     # default = runtime stage (prod deps, non-root)
     env_file: .env
