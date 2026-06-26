@@ -28,10 +28,14 @@ app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
+// Allowlist from CORS_ORIGINS (comma-separated) if set, else sane defaults.
+const corsOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
+  : process.env.NODE_ENV === 'production'
     ? ['https://akalingua.com', 'https://www.akalingua.com']
-    : ['http://localhost:5173', 'http://localhost:3001'],
+    : ['http://localhost:5173', 'http://localhost:3001'];
+app.use(cors({
+  origin: corsOrigins,
   credentials: true,
 }));
 
