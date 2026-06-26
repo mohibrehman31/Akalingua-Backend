@@ -54,14 +54,20 @@ export const create = async (req: AuthRequest, res: Response) => {
   const post = await jobPostsService.createJobPost(student.id, parsed.data);
 
   // Accelerator subscribers see leads immediately; everyone else after 10 min.
-  await enqueueJob("NOTIFY_ACCELERATOR_FEED", {
-    job_post_id: post.id,
-    stage: "accelerator",
-  });
-  await enqueueJob(
-    "NOTIFY_ACCELERATOR_FEED",
-    { job_post_id: post.id, stage: "standard" },
-    600,
+  // Best-effort: a queue outage must not 500 an already-saved post (the client
+  // would think it failed and re-post). Log and move on.
+  await Promise.all([
+    enqueueJob("NOTIFY_ACCELERATOR_FEED", {
+      job_post_id: post.id,
+      stage: "accelerator",
+    }),
+    enqueueJob(
+      "NOTIFY_ACCELERATOR_FEED",
+      { job_post_id: post.id, stage: "standard" },
+      600,
+    ),
+  ]).catch((err) =>
+    console.error("enqueue NOTIFY_ACCELERATOR_FEED failed:", err),
   );
 
   res.status(201).json(post);
