@@ -1,0 +1,658 @@
+{
+  "info": {
+    "name": "Akalingua API",
+    "_postman_id": "akalingua-collection-0001",
+    "description": "Akalingua backend — student/tutor marketplace. Set the {{base_url}} and {{access_token}} collection variables before use. Most requests use Bearer auth inherited from the collection; public routes override auth to none.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{access_token}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000", "type": "string" },
+    { "key": "access_token", "value": "", "type": "string" },
+    { "key": "refresh_token", "value": "", "type": "string" },
+    { "key": "user_id", "value": "", "type": "string" },
+    { "key": "tutor_id", "value": "", "type": "string" },
+    { "key": "student_id", "value": "", "type": "string" },
+    { "key": "job_post_id", "value": "", "type": "string" },
+    { "key": "quote_id", "value": "", "type": "string" },
+    { "key": "language_id", "value": "", "type": "string" },
+    { "key": "credential_id", "value": "", "type": "string" },
+    { "key": "notification_id", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] }
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Student",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@example.com\",\n  \"password\": \"supersecret123\",\n  \"first_name\": \"Aoife\",\n  \"last_name\": \"Murphy\",\n  \"phone_number\": \"851234567\",\n  \"phone_country_code\": \"+353\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/auth/register/student", "host": ["{{base_url}}"], "path": ["api", "v1", "auth", "register", "student"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.user_id) pm.collectionVariables.set('user_id', json.user_id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Tutor",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tutor@example.com\",\n  \"password\": \"supersecret123\",\n  \"first_name\": \"Cian\",\n  \"last_name\": \"O'Brien\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/auth/register/tutor", "host": ["{{base_url}}"], "path": ["api", "v1", "auth", "register", "tutor"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access_token) pm.collectionVariables.set('access_token', json.access_token);",
+                  "if (json.refresh_token) pm.collectionVariables.set('refresh_token', json.refresh_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/auth/verify-otp", "host": ["{{base_url}}"], "path": ["api", "v1", "auth", "verify-otp"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access_token) pm.collectionVariables.set('access_token', json.access_token);",
+                  "if (json.refresh_token) pm.collectionVariables.set('refresh_token', json.refresh_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"user_id\": \"{{user_id}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/auth/resend-otp", "host": ["{{base_url}}"], "path": ["api", "v1", "auth", "resend-otp"] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@example.com\",\n  \"password\": \"supersecret123\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/auth/login", "host": ["{{base_url}}"], "path": ["api", "v1", "auth", "login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access_token) pm.collectionVariables.set('access_token', json.access_token);",
+                  "if (json.refresh_token) pm.collectionVariables.set('refresh_token', json.refresh_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/auth/logout", "host": ["{{base_url}}"], "path": ["api", "v1", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tutors",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/tutors/profile/me", "host": ["{{base_url}}"], "path": ["api", "v1", "tutors", "profile", "me"] }
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Cian O.\",\n  \"bio\": \"I have been teaching Irish and English for over a decade with a focus on conversational fluency and exam preparation.\",\n  \"tagline\": \"Confident speakers, not silent students.\",\n  \"hourly_rate_min\": 25,\n  \"hourly_rate_max\": 40,\n  \"years_of_experience\": 10,\n  \"specialisations\": [\"exam_prep\", \"business\"],\n  \"student_age_groups\": [\"adults\", \"teens\"],\n  \"location_postcode\": \"D02 X285\",\n  \"location_district\": \"Dublin 2\",\n  \"location_country\": \"Ireland\",\n  \"teaches_online\": true,\n  \"teaches_in_person\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/tutors/profile/me", "host": ["{{base_url}}"], "path": ["api", "v1", "tutors", "profile", "me"] }
+          }
+        },
+        {
+          "name": "Go Live",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/tutors/profile/go-live", "host": ["{{base_url}}"], "path": ["api", "v1", "tutors", "profile", "go-live"] }
+          }
+        },
+        {
+          "name": "Go Offline",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/tutors/profile/go-offline", "host": ["{{base_url}}"], "path": ["api", "v1", "tutors", "profile", "go-offline"] }
+          }
+        },
+        {
+          "name": "Add Language",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"language_code\": \"ga\",\n  \"language_name\": \"Irish\",\n  \"dialect\": \"Connacht\",\n  \"status\": \"L1\",\n  \"is_primary\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/tutors/languages", "host": ["{{base_url}}"], "path": ["api", "v1", "tutors", "languages"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) pm.collectionVariables.set('language_id', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Language",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/tutors/languages/{{language_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "tutors", "languages", "{{language_id}}"] }
+          }
+        },
+        {
+          "name": "Get Credential Upload URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tutors/credentials/upload-url?filename=cert.pdf&content_type=application/pdf",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "tutors", "credentials", "upload-url"],
+              "query": [
+                { "key": "filename", "value": "cert.pdf" },
+                { "key": "content_type", "value": "application/pdf" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Credential",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"credential_type\": \"degree\",\n  \"title\": \"MA in Applied Linguistics\",\n  \"institution\": \"Trinity College Dublin\",\n  \"issued_year\": 2018,\n  \"file_url\": \"https://akalingua-private-development.s3.eu-west-1.amazonaws.com/credentials/REPLACE/REPLACE-cert.pdf\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/tutors/credentials", "host": ["{{base_url}}"], "path": ["api", "v1", "tutors", "credentials"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) pm.collectionVariables.set('credential_id', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Credential View URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/tutors/credentials/{{credential_id}}/view-url", "host": ["{{base_url}}"], "path": ["api", "v1", "tutors", "credentials", "{{credential_id}}", "view-url"] }
+          }
+        },
+        {
+          "name": "Search Tutors (public)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tutors/search?language_code=ga&status=L1&teaches_online=true&min_rate=20&max_rate=60&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "tutors", "search"],
+              "query": [
+                { "key": "language_code", "value": "ga" },
+                { "key": "status", "value": "L1" },
+                { "key": "teaches_online", "value": "true" },
+                { "key": "teaches_in_person", "value": "false", "disabled": true },
+                { "key": "min_rate", "value": "20" },
+                { "key": "max_rate", "value": "60" },
+                { "key": "specialisation", "value": "exam_prep", "disabled": true },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Public Tutor Profile",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/tutors/{{tutor_id}}/public", "host": ["{{base_url}}"], "path": ["api", "v1", "tutors", "{{tutor_id}}", "public"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/students/profile/me", "host": ["{{base_url}}"], "path": ["api", "v1", "students", "profile", "me"] }
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Aoife M.\",\n  \"location_postcode\": \"D04 N4P0\",\n  \"location_district\": \"Dublin 4\",\n  \"location_country\": \"Ireland\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/students/profile/me", "host": ["{{base_url}}"], "path": ["api", "v1", "students", "profile", "me"] }
+          }
+        },
+        {
+          "name": "Get Avatar Upload URL",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filename\": \"avatar.jpg\",\n  \"content_type\": \"image/jpeg\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/students/avatar/upload-url", "host": ["{{base_url}}"], "path": ["api", "v1", "students", "avatar", "upload-url"] }
+          }
+        },
+        {
+          "name": "Set Avatar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avatar_url\": \"https://akalingua-public-development.s3.eu-west-1.amazonaws.com/avatars/students/REPLACE/REPLACE-avatar.jpg\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/students/profile/avatar", "host": ["{{base_url}}"], "path": ["api", "v1", "students", "profile", "avatar"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Job Posts",
+      "item": [
+        {
+          "name": "Create Job Post",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"post_type\": \"broadcast\",\n  \"target_language_code\": \"ga\",\n  \"target_language_name\": \"Irish\",\n  \"dialect_preference\": \"Connacht\",\n  \"current_level\": \"elementary\",\n  \"skill_gaps\": [\"speaking\", \"listening\"],\n  \"objective\": \"personal\",\n  \"frequency\": \"standard\",\n  \"duration\": \"season\",\n  \"delivery_mode\": \"online\",\n  \"native_speaker_required\": false,\n  \"budget_min\": 25,\n  \"budget_max\": 45,\n  \"additional_notes\": \"Looking for evening sessions twice a week.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/students/job-posts", "host": ["{{base_url}}"], "path": ["api", "v1", "students", "job-posts"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) pm.collectionVariables.set('job_post_id', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List My Job Posts (student)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/students/job-posts", "host": ["{{base_url}}"], "path": ["api", "v1", "students", "job-posts"] }
+          }
+        },
+        {
+          "name": "Get Job Post (student)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/students/job-posts/{{job_post_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "students", "job-posts", "{{job_post_id}}"] }
+          }
+        },
+        {
+          "name": "Cancel Job Post",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/students/job-posts/{{job_post_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "students", "job-posts", "{{job_post_id}}"] }
+          }
+        },
+        {
+          "name": "Tutor Feed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/students/job-posts/feed?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "students", "job-posts", "feed"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leads",
+      "item": [
+        {
+          "name": "Signal Interest",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"job_post_id\": \"{{job_post_id}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/leads/signal", "host": ["{{base_url}}"], "path": ["api", "v1", "leads", "signal"] }
+          }
+        },
+        {
+          "name": "Submit Quote",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"job_post_id\": \"{{job_post_id}}\",\n  \"proposed_rate\": 35,\n  \"rate_type\": \"hourly\",\n  \"cover_message\": \"Hi! I'd love to help you reach conversational Irish over the next season — I run a structured weekly plan with conversation drills.\",\n  \"template_used\": false\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/leads/quote", "host": ["{{base_url}}"], "path": ["api", "v1", "leads", "quote"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.quote && json.quote.id) pm.collectionVariables.set('quote_id', json.quote.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "My Quotes (tutor)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/leads/my-quotes?status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "leads", "my-quotes"],
+              "query": [{ "key": "status", "value": "pending" }]
+            }
+          }
+        },
+        {
+          "name": "Shortlist Quote (student)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quote_id\": \"{{quote_id}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/leads/shortlist", "host": ["{{base_url}}"], "path": ["api", "v1", "leads", "shortlist"] }
+          }
+        },
+        {
+          "name": "Remove From Shortlist",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/leads/shortlist/{{quote_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "leads", "shortlist", "{{quote_id}}"] }
+          }
+        },
+        {
+          "name": "Get Shortlist For Job Post",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/leads/shortlist/{{job_post_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "leads", "shortlist", "{{job_post_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reveal",
+      "item": [
+        {
+          "name": "Check Reveal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/reveal/check/{{job_post_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "reveal", "check", "{{job_post_id}}"] }
+          }
+        },
+        {
+          "name": "Purchase Reveal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"job_post_id\": \"{{job_post_id}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/reveal/purchase", "host": ["{{base_url}}"], "path": ["api", "v1", "reveal", "purchase"] }
+          }
+        },
+        {
+          "name": "Confirm Reveal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payment_intent_id\": \"pi_REPLACE\",\n  \"job_post_id\": \"{{job_post_id}}\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/v1/reveal/confirm", "host": ["{{base_url}}"], "path": ["api", "v1", "reveal", "confirm"] }
+          }
+        },
+        {
+          "name": "Get Reveal Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/reveal/data/{{job_post_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "reveal", "data", "{{job_post_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Lead Fee Intent",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quote_id\": \"{{quote_id}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/payments/create-lead-fee-intent", "host": ["{{base_url}}"], "path": ["api", "v1", "payments", "create-lead-fee-intent"] }
+          }
+        },
+        {
+          "name": "Subscribe Accelerator",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/payments/accelerator/subscribe", "host": ["{{base_url}}"], "path": ["api", "v1", "payments", "accelerator", "subscribe"] }
+          }
+        },
+        {
+          "name": "Cancel Accelerator",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/payments/accelerator/cancel", "host": ["{{base_url}}"], "path": ["api", "v1", "payments", "accelerator", "cancel"] }
+          }
+        },
+        {
+          "name": "Payment History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/payments/history", "host": ["{{base_url}}"], "path": ["api", "v1", "payments", "history"] }
+          }
+        },
+        {
+          "name": "Stripe Webhook (test only)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Stripe-Signature", "value": "t=REPLACE,v1=REPLACE" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "description": "Called by Stripe directly. Use `stripe listen --forward-to localhost:3000/api/v1/payments/stripe-webhook` for local testing — this entry exists so the route shows up in the collection but you should not invoke it manually without a valid signed payload.",
+            "url": { "raw": "{{base_url}}/api/v1/payments/stripe-webhook", "host": ["{{base_url}}"], "path": ["api", "v1", "payments", "stripe-webhook"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/notifications?unread_only=false&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "notifications"],
+              "query": [
+                { "key": "unread_only", "value": "false" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.length) pm.collectionVariables.set('notification_id', json.data[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mark Notification Read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/notifications/{{notification_id}}/read", "host": ["{{base_url}}"], "path": ["api", "v1", "notifications", "{{notification_id}}", "read"] }
+          }
+        },
+        {
+          "name": "Mark All Read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/v1/notifications/read-all", "host": ["{{base_url}}"], "path": ["api", "v1", "notifications", "read-all"] }
+          }
+        }
+      ]
+    }
+  ]
+}

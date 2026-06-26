@@ -99,11 +99,56 @@ export const verifyOTP = async (
   }
 
   await redis.del(`otp:${userId}`);
+  // Per the contract, verifying the account OTP confirms both channels.
   await db("users").where({ id: userId }).update({
     is_phone_verified: true,
+    is_email_verified: true,
     otp_code: null,
     otp_expires_at: null,
     updated_at: new Date(),
   });
+  return { success: true };
+};
+
+// --- Standalone phone verification (Post-a-Request flow) -------------------
+// Keyed by phone number, not user id. Public — no account required.
+
+const phoneKey = (phone: string) => `phone_otp:${phone}`;
+
+export const storePhoneOTP = async (
+  phone: string,
+  otp: string,
+): Promise<void> => {
+  await redis.set(
+    phoneKey(phone),
+    JSON.stringify({ code: otp, attempts: 0 }),
+    "EX",
+    600,
+  );
+};
+
+export const verifyPhoneOTP = async (
+  phone: string,
+  submittedCode: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const raw = await redis.get(phoneKey(phone));
+  if (!raw)
+    return { success: false, error: "Code expired. Please request a new one." };
+
+  const { code, attempts } = JSON.parse(raw);
+  if (attempts >= 5) {
+    await redis.del(phoneKey(phone));
+    return { success: false, error: "Too many attempts. Request a new code." };
+  }
+  if (code !== submittedCode) {
+    await redis.set(
+      phoneKey(phone),
+      JSON.stringify({ code, attempts: attempts + 1 }),
+      "KEEPTTL",
+    );
+    return { success: false, error: "Incorrect code. Please try again." };
+  }
+
+  await redis.del(phoneKey(phone));
   return { success: true };
 };
