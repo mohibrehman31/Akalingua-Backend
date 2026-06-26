@@ -13,7 +13,8 @@ const db = knex({
   client: 'pg',
   connection: {
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : false,
+    // DB_SSL, not NODE_ENV: the internal Postgres container has no TLS. Set DB_SSL=true for managed DBs (RDS).
+    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : false,
   },
   pool: {
     min: 2,

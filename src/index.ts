@@ -23,6 +23,9 @@ import revealRoutes from './modules/reveal/reveal.routes';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Behind Caddy/nginx — trust the proxy so rate-limit keys off the real client IP.
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 app.use(cors({
